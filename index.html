@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>継続タイプ図鑑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;500;700&family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f1e7d6;
+    --bg-soft:#fffcf5;
+    --panel:#fffbf2;
+    --fg:#382c20;
+    --fg-muted:#8d7a67;
+    --accent:#bf4e2c;
+    --accent-strong:#963c22;
+    --accent-soft:#ecd6b8;
+    --mint:#57795f;
+    --line:rgba(56,44,32,0.14);
+    --line-strong:rgba(56,44,32,0.24);
+    --shadow:0 10px 26px rgba(56,44,32,0.12);
+    --paper-spot: radial-gradient(circle, rgba(56,44,32,0.05) 1px, transparent 1.4px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background-color:var(--bg);background-image:var(--paper-spot);background-size:14px 14px;color:var(--fg);font-family:'M PLUS Rounded 1c', sans-serif;line-height:1.75;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word;}
+  h1,h2,h3{font-family:'Kaisei Decol', serif;font-weight:700;letter-spacing:0.02em;margin:0;}
+  p{margin:0;}
+  button{font-family:inherit;}
+  ::selection{background:var(--accent-soft);color:var(--accent-strong);}
+  .specimen-no{font-family:'M PLUS Rounded 1c', sans-serif;font-variant-numeric:tabular-nums;}
+
+  .screen{min-height:100svh;display:none;padding:6vh 6vw 8vh;}
+  .screen.active{display:flex;flex-direction:column;}
+  .wrap{max-width:640px;width:100%;margin:0 auto;}
+
+  header.topbar{max-width:640px;margin:0 auto;display:flex;justify-content:space-between;align-items:baseline;padding-bottom:5vh;width:100%;position:relative;z-index:1;}
+  .wordmark{font-family:'Kaisei Decol', serif;font-weight:700;font-size:1.2rem;letter-spacing:0.04em;}
+  .wordmark em{font-style:normal;color:var(--accent-strong);}
+  .topbar .tag{font-size:0.72rem;color:var(--fg-muted);letter-spacing:0.03em;background:var(--accent-soft);padding:0.3rem 0.7rem;border-radius:999px;}
+
+  #hero{position:relative;overflow:hidden;}
+  #hero .wrap{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;}
+  .hero-kicker{color:var(--accent-strong);font-size:0.9rem;font-weight:700;margin-bottom:1.4rem;font-family:'M PLUS Rounded 1c', sans-serif;}
+  .hero-title{font-size:clamp(1.7rem, 7.2vw, 3rem);line-height:1.3;font-weight:700;white-space:nowrap;}
+  .hero-watermark{position:absolute;z-index:0;opacity:0.1;mix-blend-mode:multiply;filter:grayscale(1) contrast(1.05);pointer-events:none;}
+  .hero-watermark img{display:block;width:100%;height:100%;object-fit:contain;}
+  .hero-watermark.wm-1{width:220px;height:220px;top:-6vh;right:-4vw;transform:rotate(8deg);}
+  .hero-watermark.wm-2{width:170px;height:170px;bottom:2vh;left:-5vw;transform:rotate(-10deg);}
+  .hero-lede{margin-top:1.8rem;color:var(--fg-muted);font-size:1rem;max-width:34em;}
+  .hero-meta{margin-top:2.2rem;display:flex;gap:1.6rem;flex-wrap:wrap;}
+  .hero-meta div{font-size:0.8rem;color:var(--fg-muted);background:var(--bg-soft);border:1px solid var(--line);padding:0.6rem 1rem;border-radius:16px;}
+  .hero-meta strong{display:block;font-family:'M PLUS Rounded 1c', sans-serif;font-size:1.25rem;color:var(--fg);font-weight:800;}
+  .cta{margin-top:2.4rem;display:inline-flex;align-items:center;gap:0.6rem;background:var(--accent);border:none;color:#fff;padding:1rem 2rem;font-size:1rem;font-weight:700;border-radius:999px;cursor:pointer;align-self:flex-start;box-shadow:var(--shadow);transition:transform 0.2s ease, background 0.2s ease;}
+  .cta:hover{background:var(--accent-strong);transform:translateY(-2px);}
+
+  .method-note{margin-top:2.8rem;background:var(--bg-soft);border:1px solid var(--line);border-radius:6px;padding:1.4rem 1.6rem;font-size:0.82rem;color:var(--fg-muted);max-width:38em;}
+  .method-note b{color:var(--fg);font-weight:700;}
+
+  .type-index{margin-top:4vh;padding-top:0.5rem;}
+  .type-index-label{font-size:0.85rem;color:var(--fg);font-weight:700;margin-bottom:1rem;font-family:'M PLUS Rounded 1c', sans-serif;}
+  .type-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:1rem;}
+  .type-chip{background:var(--bg-soft);border:1px solid var(--line);border-radius:6px;padding:1.5rem 1.4rem;text-align:left;box-shadow:var(--shadow);position:relative;}
+  .type-chip::before{content:'';position:absolute;inset:5px;border:1px solid var(--line);border-radius:3px;pointer-events:none;}
+  .type-chip .specimen-no{display:block;font-size:0.68rem;color:var(--fg-muted);letter-spacing:0.06em;margin-bottom:0.6rem;}
+  .type-chip .emoji{display:block;font-size:1.9rem;margin-bottom:0.6rem;}
+  .type-chip img{width:92px;height:92px;border-radius:10px;object-fit:cover;margin-bottom:0.8rem;box-shadow:var(--shadow);}
+  .type-chip b{display:block;font-size:1.2rem;color:var(--fg);font-weight:700;font-family:'Kaisei Decol', serif;}
+  .type-chip .chip-type{display:block;font-size:0.8rem;color:var(--accent-strong);font-weight:700;margin:0.3rem 0 0.9rem;font-family:'M PLUS Rounded 1c', sans-serif;}
+  .type-chip .chip-traits{display:flex;flex-wrap:wrap;gap:0.4rem;}
+  .type-chip .chip-traits span{background:var(--accent-soft);color:var(--accent-strong);font-size:0.72rem;font-weight:700;padding:0.3rem 0.6rem;border-radius:999px;font-family:'M PLUS Rounded 1c', sans-serif;}
+  .type-index-note{margin-top:1.1rem;font-size:0.78rem;color:var(--fg-muted);}
+  @media (max-width:480px){ .type-grid{grid-template-columns:1fr;} }
+
+  #quiz .wrap{flex:1;display:flex;flex-direction:column;}
+  .progress-row{display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:var(--fg-muted);font-weight:700;margin-bottom:0.9rem;}
+  .progress-track{height:8px;border-radius:999px;background:var(--line);width:100%;margin-bottom:8vh;position:relative;overflow:hidden;}
+  .progress-fill{height:8px;border-radius:999px;background:var(--accent);width:0%;transition:width 0.4s ease;}
+  .q-body{flex:1;display:flex;flex-direction:column;justify-content:center;}
+  .q-text{font-size:clamp(1.3rem, 3.8vw, 1.7rem);font-weight:700;max-width:15em;margin-bottom:2.8rem;}
+  .likert{display:flex;justify-content:space-between;align-items:center;gap:0.5rem;}
+  .likert-btn{width:52px;height:52px;border-radius:50%;border:none;background:var(--accent-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--accent-strong);font-size:1rem;font-weight:700;transition:background 0.2s ease, color 0.2s ease, transform 0.15s ease;flex:none;box-shadow:0 4px 10px rgba(74,59,50,0.06);}
+  .likert-btn:hover{background:var(--accent);color:#fff;transform:translateY(-2px);}
+  .likert-btn:active{transform:scale(0.94);}
+  .likert-btn.s1,.likert-btn.s5{width:60px;height:60px;}
+  .likert-labels{display:flex;justify-content:space-between;margin-top:1rem;font-size:0.76rem;color:var(--fg-muted);}
+  @media (max-width:520px){ .likert-btn{width:42px;height:42px;font-size:0.85rem;} .likert-btn.s1,.likert-btn.s5{width:46px;height:46px;} }
+  .q-nav{margin-top:2.4rem;font-size:0.82rem;color:var(--fg-muted);background:none;border:none;cursor:pointer;align-self:flex-start;padding:0;font-weight:700;}
+  .q-nav:hover{color:var(--accent-strong);}
+
+  .q-slide-enter{animation:slideIn 0.4s ease both;}
+  @keyframes slideIn{from{opacity:0; transform:translateX(24px);} to{opacity:1; transform:translateX(0);}}
+  @media (prefers-reduced-motion: reduce){ .q-slide-enter{animation:none;} .progress-fill,.cta{transition:none;} }
+
+  #result .wrap{max-width:640px;}
+  .result-eyebrow{font-size:0.82rem;color:var(--fg-muted);font-weight:700;margin-bottom:1rem;font-family:'M PLUS Rounded 1c', sans-serif;}
+  .result-grid{display:flex;flex-direction:column;align-items:flex-start;gap:1.4rem;}
+  .portrait{width:220px;height:220px;flex:none;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, var(--accent-soft), #fff);box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--line-strong);position:relative;}
+  .portrait::after{content:'';position:absolute;inset:6px;border:1px solid var(--line);pointer-events:none;}
+  .portrait span{font-family:'M PLUS Rounded 1c', sans-serif;font-weight:800;font-size:2rem;}
+  .portrait img{width:100%;height:100%;object-fit:cover;}
+  .result-character{font-size:clamp(2rem, 6.5vw, 2.8rem);font-weight:700;line-height:1.2;color:var(--fg);}
+  .result-typename{font-size:1.05rem;font-weight:700;color:var(--accent-strong);margin-top:0.5rem;font-family:'M PLUS Rounded 1c', sans-serif;}
+  .result-sub{color:var(--fg-muted);font-size:0.8rem;margin-top:0.3rem;font-weight:700;letter-spacing:0.02em;font-family:'M PLUS Rounded 1c', sans-serif;}
+  .result-catch{color:var(--fg-muted);margin-top:1.6rem;max-width:32em;font-size:0.98rem;}
+
+  .personality-text{color:var(--fg);line-height:1.9;font-size:0.98rem;margin-bottom:1.4rem;}
+  .trait-tags{display:flex;flex-wrap:wrap;gap:0.6rem;}
+  .trait-tags span{background:var(--accent-soft);color:var(--accent-strong);font-size:0.88rem;font-weight:700;padding:0.5rem 1rem;border-radius:999px;}
+
+  .result-section{margin-top:1.4rem;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1.8rem 1.7rem;box-shadow:var(--shadow);}
+  .result-section h3{font-size:1.05rem;font-weight:700;font-family:'Kaisei Decol', serif;color:var(--fg);letter-spacing:0.01em;margin-bottom:1.1rem;display:flex;align-items:center;gap:0.5rem;}
+  .result-section ul{margin:0;padding:0;list-style:none;}
+  .result-section li{padding:0.7rem 0.2rem;font-size:0.96rem;color:var(--fg);display:flex;gap:0.6rem;}
+  .result-section li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none;margin-top:0.6rem;}
+
+  .score-help{font-size:0.78rem;color:var(--fg-muted);margin-bottom:1.3rem;}
+  .score-row{margin-bottom:1.4rem;}
+  .score-row:last-child{margin-bottom:0;}
+  .score-labels{display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.5rem;font-weight:700;}
+  .score-labels .pole-a{color:var(--fg);}
+  .score-labels .pole-b{color:var(--fg-muted);}
+  .score-track{height:8px;border-radius:999px;background:var(--line);width:100%;position:relative;overflow:hidden;}
+  .score-fill{height:8px;border-radius:999px;background:linear-gradient(90deg, var(--accent-strong), var(--accent));width:50%;}
+
+  .point-box{margin-top:1.4rem;background:linear-gradient(135deg, var(--accent-soft), #fff);border:2px solid var(--accent);border-radius:6px;padding:1.8rem 1.7rem;box-shadow:var(--shadow);}
+  .point-badge{display:inline-block;background:var(--accent);color:#fff;font-size:0.78rem;font-weight:800;padding:0.4rem 0.95rem;border-radius:999px;margin-bottom:1.1rem;font-family:'M PLUS Rounded 1c', sans-serif;}
+  .point-lead{font-size:0.85rem;font-weight:700;color:var(--accent-strong);margin-bottom:0.6rem;font-family:'M PLUS Rounded 1c', sans-serif;}
+  .point-conclusion{font-size:0.98rem;color:var(--fg);font-weight:700;line-height:1.8;margin:1.5rem 0 1.6rem;padding-top:1.4rem;border-top:1px dashed var(--line-strong);}
+  .point-box h4{font-size:1rem;font-weight:700;font-family:'Kaisei Decol', serif;color:var(--fg);margin-bottom:0.9rem;display:flex;align-items:center;gap:0.5rem;}
+  .point-box ul{margin:0 0 0.2rem;padding:0;list-style:none;}
+  .point-box li{padding:0.6rem 0.2rem;font-size:0.95rem;color:var(--fg);display:flex;gap:0.6rem;}
+  .point-box li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent-strong);flex:none;margin-top:0.6rem;}
+  .risk-list li::before{content:'';border-radius:0;background:none;border-left:6px solid var(--accent-strong);border-top:4px solid transparent;border-bottom:4px solid transparent;width:0;height:0;margin-top:0.45rem;}
+
+  .cta-ghost{background:var(--bg-soft);border:1px solid var(--line-strong);color:var(--fg);padding:0.85rem 1.6rem;font-size:0.9rem;font-weight:700;border-radius:999px;cursor:pointer;text-decoration:none;display:inline-block;}
+  .cta-ghost:hover{border-color:var(--accent);color:var(--accent-strong);}
+  .restart{margin-top:1.4rem;font-size:0.85rem;color:var(--fg-muted);background:none;border:none;cursor:pointer;padding:0;font-weight:700;display:block;}
+  .restart:hover{color:var(--accent-strong);}
+  .disclaimer{margin-top:2.6rem;font-size:0.74rem;color:var(--fg-muted);border-top:1px solid var(--line);padding-top:1.4rem;}
+
+  @media (max-width:640px){ .screen{padding:8vh 6vw 8vh;} }
+  @media (max-width:480px){ .portrait{width:180px;height:180px;} }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+  設定ポイント（差し替え用）
+  1. ブランド名: #wordmark-text（現在「継続タイプ図鑑」は仮称）
+  2. キャラクター画像: .portrait 内 <img> に各タイプの画像を表示中（tsuki.png / homura.png / mebuki.png / hirameki.png）
+=============================================================== -->
+
+<header class="topbar">
+  <div class="wordmark" id="wordmark-text">継続タイプ<em>図鑑</em></div>
+</header>
+
+<section class="screen active" id="hero">
+  <div class="hero-watermark wm-1"><img src="hirameki.png" alt=""></div>
+  <div class="hero-watermark wm-2"><img src="mebuki.png" alt=""></div>
+  <div class="wrap">
+    <p class="hero-kicker">🧭 8つの質問・約1〜2分でわかる</p>
+    <h1 class="hero-title">トレーニングタイプ診断</h1>
+    <p class="hero-lede">トレーニングの続け方には、人それぞれのタイプがあります。8つの質問から、あなたに合った継続スタイルを診断します。</p>
+
+    <div class="hero-meta">
+      <div><strong>4</strong>タイプ</div>
+      <div><strong>8</strong>問・5段階評価</div>
+      <div><strong>1〜2分</strong>で完了</div>
+    </div>
+
+    <button class="cta" onclick="startQuiz()">✨ 診断をはじめる</button>
+
+    <div class="type-index">
+      <p class="type-index-label">診断でわかる4つのタイプ</p>
+      <div class="type-grid" id="type-grid"></div>
+      <p class="type-index-note">※ タイプの詳しい特徴やアドバイスは、診断を受けると見られます</p>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="quiz">
+  <div class="wrap">
+    <div class="progress-row">
+      <span id="progress-label">Q1 / 8</span>
+      <span id="progress-percent">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <div class="q-body" id="q-body">
+      <p class="q-text" id="q-text"></p>
+      <div class="likert" id="q-likert"></div>
+      <div class="likert-labels"><span>あてはまらない</span><span>あてはまる</span></div>
+    </div>
+
+    <button class="q-nav" id="q-back" onclick="goBack()">← 前の質問に戻る</button>
+  </div>
+</section>
+
+<section class="screen" id="result">
+  <div class="wrap">
+    <p class="result-eyebrow">診断結果</p>
+    <div class="result-grid">
+      <div class="portrait"><img id="result-portrait" src="" alt=""></div>
+      <div>
+        <h2 class="result-character" id="result-character"></h2>
+        <p class="result-typename" id="result-typename"></p>
+        <p class="result-sub" id="result-sub"></p>
+      </div>
+    </div>
+    <p class="result-catch" id="result-catch"></p>
+
+    <p class="method-note" id="tie-note" style="display:none;margin-top:1.2rem;"></p>
+
+    <div class="result-section">
+      <h3>📊 傾向スコア</h3>
+      <p class="score-help">数字が大きいほど、その傾向が強いタイプです。</p>
+      <div class="score-row">
+        <div class="score-labels"><span class="pole-a" id="score-m-a-label"></span><span class="pole-b" id="score-m-b-label"></span></div>
+        <div class="score-track"><div class="score-fill" id="score-m-fill"></div></div>
+      </div>
+      <div class="score-row">
+        <div class="score-labels"><span class="pole-a" id="score-c-a-label"></span><span class="pole-b" id="score-c-b-label"></span></div>
+        <div class="score-track"><div class="score-fill" id="score-c-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="result-section">
+      <h3>🏋️ トレーニング中の特徴</h3>
+      <ul id="result-habit"></ul>
+    </div>
+
+    <div class="result-section">
+      <h3>✨ これから意識したいポイント</h3>
+      <ul id="result-train"></ul>
+    </div>
+
+    <div class="point-box">
+      <span class="point-badge">💡 ここがポイント</span>
+      <p class="point-lead">このまま一人で続けると…</p>
+      <ul class="risk-list" id="result-risk"></ul>
+      <p class="point-conclusion">だからこそ、一人で抱え込まずにトレーナーに頼った方が、遠回りせずに済みます。</p>
+      <h4>🤝 トレーナーに頼るなら、こんなことを</h4>
+      <ul id="result-ask"></ul>
+    </div>
+
+    <div class="result-section">
+      <h3>🧩 こんな性格、当てはまりませんか？</h3>
+      <p class="personality-text" id="result-personality"></p>
+      <div class="trait-tags" id="result-traits"></div>
+    </div>
+
+    <button class="cta-ghost" style="margin-top:2rem;" onclick="copyResult()">📋 結果をコピーする</button>
+
+    <button class="restart" onclick="resetQuiz()">🔄 もう一度診断する</button>
+
+    <p class="disclaimer">本診断は自己決定理論およびビッグファイブ性格特性の考え方を参考に設計したオリジナルの傾向診断であり、心理学的な妥当性・信頼性の検証を経た検査ではありません。エンターテインメントとしてご利用ください。</p>
+  </div>
+</section>
+
+<script>
+/* ---------------- 質問データ（2軸・8問、軸をまたいで交互配置） ---------------- */
+const questions = [
+  {axis:'m', pole:'I', text:'誰かと比べなくても、自分のペースで十分に満足できていた'},
+  {axis:'c', pole:'C', text:'セット間の休憩も、毎回だいたい同じリズムで、慌てず取りたい派だった'},
+  {axis:'m', pole:'E', text:'周りの人と自分を比べると、より頑張れるタイプだった'},
+  {axis:'c', pole:'B', text:'長く続けるよりも、短期間に一気に集中して結果を出す方が自分に合っていた'},
+  {axis:'m', pole:'I', text:'成果をSNSなどで発信しなくても、達成感を十分に感じられていた'},
+  {axis:'c', pole:'C', text:'同じトレーニングを長く続けること自体には、あまり抵抗がなかった'},
+  {axis:'m', pole:'E', text:'トレーニングの成果を、SNSに投稿したくなることが多かった'},
+  {axis:'c', pole:'B', text:'同じことを繰り返すよりも、新しい種目やメニューに挑戦する方が燃えた'},
+];
+
+const axisLabels = {
+  m:{a:'内発的', b:'外発的'},
+  c:{a:'継続型', b:'瞬発型'},
+};
+
+const types = {
+  IC:{ name:'静かな自信屋', character:'つき', emoji:'🌙', img:'tsuki.png', sub:'Intrinsic / Continuous',
+    catch:'誰に見せるためでもなく、自分のペースで続けられる人。だからこそ、変化のサインは自分では気づきにくい。',
+    traits:['自分軸','コツコツ型','照れ屋さん'],
+    personalityText:'人からどう見られるかより、自分が納得できるかどうかを大事にするタイプ。人前で目立つことよりも、静かに自分のペースを守ることに安心感を覚えます。褒められるとちょっと照れくさいけれど、実はしっかり嬉しい——そんな一面もあるのでは？',
+    habit:['休憩はそこそこで切り上げて、黙々と淡々とこなす派','同じメニューを何ヶ月続けても、正直あまり苦じゃない','隣の人が何キロ上げてても、あんまり気にならない','頑張ってる姿をSNSにあげる発想が、そもそもあまりない'],
+    train:['重量や回数を毎回記録し、月1回は数字で振り返る時間をつくる','「一人でもう十分」と思った時こそ、あえてフォームや記録を見直してみる','自分の感覚と、実際の記録にズレがないか定期的に確認する'],
+    risk:['同じフォームの崩れに気づかないまま、半年経ってもほとんど変化を感じられない','停滞のサインを見逃したまま、静かにモチベーションだけが尽きていく','一人で抱え込んだ末に、気づけばジムから足が遠のいている'],
+    ask:['月1回、フォームだけ客観的にチェックしてもらう','自分の記録と実際の変化にズレがないか、一緒に確認してもらう'],
+},
+  IB:{ name:'短期集中屋', character:'ほむら', emoji:'🔥', img:'homura.png', sub:'Intrinsic / Burst',
+    catch:'自分の中の火で一気に燃え上がれる人。ただしその火は、目標を達成した瞬間に消えやすい。',
+    traits:['のめり込み型','飽きっぽい','マイペース'],
+    personalityText:'興味を持ったことには一気にのめり込み、まわりが驚くほどのスピードで結果を出すタイプ。ただしその分、熱が冷めるのも早め。「やる」と決めた瞬間の集中力はピカイチですが、人に急かされるとかえってやる気を失ってしまうことも。',
+    habit:['ノッてる時は休憩を惜しむのに、一段落すると急に長休憩','同じメニューが続くと、正直すぐ飽きてくる','人と比べるより、前回の自分に勝てるかが気になる','でっかい目標を達成した時だけ、つい投稿したくなる'],
+    train:['達成のたびに、次の小さな目標を自分で再設定する仕組みを持っておく','燃料切れのサインが出たら、無理に続けず短期集中に区切り直す','常時ではなく、節目ごとに強度を上げる緩急をつける'],
+    risk:['次の目標を見失ったまま、燃え尽きた状態が何ヶ月も続いてしまう','「またそのうち」を繰り返すうちに、積み上げた成果がゼロに戻る','再開のきっかけがないまま、トレーニングの習慣自体がなくなってしまう'],
+    ask:['目標を達成するたびに、次の目標設定を一緒に考えてもらう','燃え尽きそうなタイミングで、短期集中メニューを組んでもらう'],
+},
+  EC:{ name:'見守られ屋', character:'めぶき', emoji:'🌱', img:'mebuki.png', sub:'Extrinsic / Continuous',
+    catch:'誰かに見てもらえているからこそ、コツコツ続けられる人。気づかれていない感覚が積もると、静かに離れてしまう。',
+    traits:['褒められ伸び型','仲間思い','寂しがり屋'],
+    personalityText:'誰かに見てもらえている、気にかけてもらえていると感じると、自然と頑張れるタイプ。一人でコツコツというより、仲間や周りの反応があってこそ力を発揮します。褒められた時の伸びしろは、誰よりも大きいかもしれません。',
+    habit:['休憩中、つい周りの様子が気になってしまう','同じメニューでも、誰かと一緒なら意外と続けられる','隣の人がどれくらいやってるか、ついチェックしてしまう','ちょっとした変化でも、SNSにあげて気づいてほしくなる'],
+    train:['小さな変化でも、自分の言葉で記録して残しておく','頑張りに気づいてもらえる場（人・コミュニティ）を意識して持っておく','記録に出にくい努力も、見えるかたちに変換しておく'],
+    risk:['気づかれていない感覚が積み重なり、ある日突然通わなくなる','モヤモヤを誰にも言えないまま、静かに離れてしまう','変化を感じられないまま、「意味あるのかな」と自問し続ける'],
+    ask:['毎回のセッションで、変化や頑張りを言葉にして伝えてもらう','記録に出にくい努力にも、気づいて拾ってもらう'],
+},
+  EB:{ name:'一発逆転屋', character:'ひらめき', emoji:'⚡', img:'hirameki.png', sub:'Extrinsic / Burst',
+    catch:'気分が上がった瞬間の勢いはすごい人。ただしその勢いが冷めると、次の一歩が急に重くなる。',
+    traits:['ノリ重視','即行動派','ムードメーカー'],
+    personalityText:'テンションが上がった瞬間の行動力は誰にも負けないタイプ。「今でしょ」と思ったら、すぐ動き出せる瞬発力の持ち主です。周りが盛り上がっていると、つい一緒に乗っかりたくなるムードメーカーな一面も。',
+    habit:['テンションが高い日は、休憩もそこそこに一気に追い込む','同じことの繰り返しより、新しいメニューにすぐ飛びつきたくなる','周りと比べて、自分がどれだけやれてるか気になっちゃう','気合が入った日は、すぐSNSにあげたくなる'],
+    train:['定期的に小さな刺激（新メニュー・記録更新のチャンスなど）を自分で仕込んでおく','テンションが落ちた時に戻ってこられる、低いハードルの入り口を用意しておく','一回休んでも「そこからでいい」と割り切れる基準を決めておく'],
+    risk:['最初の勢いを取り戻せないまま、再開のきっかけを失ってしまう','「また今度」が積み重なって、気づけば半年以上のブランクになる','刺激がないまま、同じところでずっと足踏みしてしまう'],
+    ask:['刺激が切れそうな頃合いで、声をかけてもらう','お休みしても責めずに、そこからの再開をサポートしてもらう'],
+},
+};
+
+let current = 0;
+let answerHistory = [];
+const tally = { m:{I:0,E:0}, c:{C:0,B:0} };
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function buildTypeIndex(){
+  const grid = document.getElementById('type-grid');
+  Object.keys(types).forEach((code, idx)=>{
+    const t = types[code];
+    const el = document.createElement('div');
+    el.className = 'type-chip';
+    const tagsHtml = t.traits.map(x => '<span>#' + x + '</span>').join('');
+    const no = 'No.' + String(idx + 1).padStart(2, '0');
+    el.innerHTML = '<span class="specimen-no">' + no + '</span><img src="' + t.img + '" alt="' + t.character + '"><b>' + t.character + '</b>' +
+      '<span class="chip-type">' + t.name + '</span>' +
+      '<div class="chip-traits">' + tagsHtml + '</div>';
+    grid.appendChild(el);
+  });
+}
+buildTypeIndex();
+
+function startQuiz(){
+  current = 0; answerHistory = [];
+  tally.m={I:0,E:0}; tally.c={C:0,B:0};
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = questions[current];
+  document.getElementById('progress-label').textContent = 'Q' + (current+1) + ' / ' + questions.length;
+  document.getElementById('progress-percent').textContent = Math.round((current/questions.length)*100) + '%';
+  document.getElementById('progress-fill').style.width = (current/questions.length*100) + '%';
+  document.getElementById('q-back').style.visibility = current===0 ? 'hidden' : 'visible';
+
+  const body = document.getElementById('q-body');
+  body.classList.remove('q-slide-enter');
+  void body.offsetWidth;
+  body.classList.add('q-slide-enter');
+
+  document.getElementById('q-text').textContent = q.text;
+  const likert = document.getElementById('q-likert');
+  likert.innerHTML = '';
+  for(let v=1; v<=5; v++){
+    const btn = document.createElement('button');
+    btn.className = 'likert-btn' + (v===1 ? ' s1' : v===5 ? ' s5' : '');
+    btn.textContent = v;
+    btn.onclick = () => selectAnswer(q.axis, q.pole, v);
+    likert.appendChild(btn);
+  }
+}
+
+function selectAnswer(axis, pole, value){
+  tally[axis][pole] += value;
+  answerHistory.push({axis, pole, value});
+  current++;
+  if(current >= questions.length){
+    finishQuiz();
+  } else {
+    renderQuestion();
+  }
+}
+
+function goBack(){
+  if(current===0) return;
+  current--;
+  const last = answerHistory.pop();
+  tally[last.axis][last.pole] -= last.value;
+  renderQuestion();
+}
+
+// Fair tie-break: same rationale as TRAINING COMPASS — a coin flip when an axis
+// is exactly tied keeps all 4 types reachable at roughly equal rates instead of
+// structurally favoring one corner type. See project-brief.md for the history
+// of the bug this avoids. Do not change this without re-reading that history.
+function pickPole(sumA, poleA, sumB, poleB){
+  if(sumA > sumB) return poleA;
+  if(sumB > sumA) return poleB;
+  return Math.random() < 0.5 ? poleA : poleB;
+}
+
+function finishQuiz(){
+  document.getElementById('progress-fill').style.width = '100%';
+  const m = pickPole(tally.m.I, 'I', tally.m.E, 'E');
+  const c = pickPole(tally.c.C, 'C', tally.c.B, 'B');
+  const code = m + c;
+
+  const pct = {
+    m: Math.round((tally.m.I / (tally.m.I + tally.m.E)) * 100),
+    c: Math.round((tally.c.C / (tally.c.C + tally.c.B)) * 100),
+  };
+
+  const tieCount = [pct.m, pct.c].filter(p => p === 50).length;
+
+  // Validity check: with only 8 items, a stdev-based threshold flags plenty of
+  // genuine, thoughtful answers as "low validity" (e.g. mostly-neutral responses
+  // with one differing item already read as suspicious). Flag only the actual
+  // failure mode this is meant to catch — every single answer being identical,
+  // i.e. clicking through without reading.
+  const allValues = answerHistory.map(h => h.value);
+  const isLowValidity = allValues.every(v => v === allValues[0]);
+
+  renderResult(code, pct, tieCount, isLowValidity);
+}
+
+function renderResult(code, pct, tieCount, isLowValidity){
+  const t = types[code];
+  const portraitImg = document.getElementById('result-portrait');
+  portraitImg.src = t.img;
+  portraitImg.alt = t.character;
+  document.getElementById('result-character').textContent = t.character;
+  document.getElementById('result-typename').textContent = t.name;
+  document.getElementById('result-sub').textContent = t.sub;
+  document.getElementById('result-catch').textContent = t.catch;
+  document.getElementById('result-personality').textContent = t.personalityText;
+  fillTags('result-traits', t.traits);
+  fillList('result-habit', t.habit);
+  fillList('result-train', t.train);
+  fillList('result-ask', t.ask);
+  fillList('result-risk', t.risk);
+
+  setScoreRow('m', pct.m);
+  setScoreRow('c', pct.c);
+
+  const tieNote = document.getElementById('tie-note');
+  if(isLowValidity){
+    tieNote.style.display = 'block';
+    tieNote.style.color = 'var(--accent-strong)';
+    tieNote.textContent = '回答のばらつきが少なく、参考程度の結果になっています。よければもう一度、1問ずつゆっくり読みながら答えてみてください。';
+  } else if(tieCount >= 1){
+    tieNote.style.display = 'block';
+    tieNote.style.color = '';
+    tieNote.textContent = '軸の回答がちょうど半々でした。該当する軸はどちらの傾向も持ち合わせていると考えられます。';
+  } else {
+    tieNote.style.display = 'none';
+    tieNote.textContent = '';
+  }
+
+  window._lastResult = { code, name:t.name, catch:t.catch, pct };
+  showScreen('result');
+}
+
+// Always show the stronger-leaning side first (bold, left) with the bar filled
+// to match its percentage, so "bigger number = more filled bar" holds no matter
+// which pole wins. Previously the bar always filled by pole-A's percentage
+// regardless of which side actually won, which read as backwards whenever pole B
+// was dominant (e.g. a small accent bar next to a large "83%" on the muted side).
+function setScoreRow(axis, pctA){
+  const labels = axisLabels[axis];
+  const aWins = pctA >= 50;
+  const winnerLabel = aWins ? labels.a : labels.b;
+  const winnerPct = aWins ? pctA : (100 - pctA);
+  const otherLabel = aWins ? labels.b : labels.a;
+  const otherPct = aWins ? (100 - pctA) : pctA;
+  document.getElementById('score-' + axis + '-a-label').textContent = winnerLabel + ' ' + winnerPct + '%';
+  document.getElementById('score-' + axis + '-b-label').textContent = otherLabel + ' ' + otherPct + '%';
+  document.getElementById('score-' + axis + '-fill').style.width = winnerPct + '%';
+}
+
+function fillTags(id, items){
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  items.forEach(i=>{
+    const span = document.createElement('span');
+    span.textContent = '#' + i;
+    el.appendChild(span);
+  });
+}
+
+function fillList(id, items){
+  const ul = document.getElementById(id);
+  ul.innerHTML = '';
+  items.forEach(i=>{
+    const li = document.createElement('li');
+    li.textContent = i;
+    ul.appendChild(li);
+  });
+}
+
+function copyResult(){
+  const r = window._lastResult;
+  if(!r) return;
+  const text = '継続タイプ図鑑 診断結果\nタイプ: ' + r.name + '（' + r.code + '）\n' + r.catch + '\n\n#継続タイプ図鑑';
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = event.target;
+    const original = btn.textContent;
+    btn.textContent = 'コピーしました ✓';
+    setTimeout(()=>btn.textContent = original, 1600);
+  });
+}
+
+function resetQuiz(){
+  showScreen('hero');
+}
+</script>
+</body>
+</html>

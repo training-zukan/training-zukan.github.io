@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全キャラクター一覧（内容確認用）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fff8f1; --bg-soft:#ffffff; --panel:#ffffff; --fg:#4a3b32; --fg-muted:#9c8c7d;
+    --accent:#ff8a5b; --accent-strong:#ff6f3c; --accent-soft:#ffe3d1;
+    --line:rgba(74,59,50,0.10); --line-strong:rgba(74,59,50,0.18);
+    --shadow:0 10px 28px rgba(74,59,50,0.09);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:'M PLUS Rounded 1c', sans-serif;line-height:1.75;word-break:keep-all;overflow-wrap:break-word;}
+  .page-head{max-width:760px;margin:0 auto;padding:5vh 6vw 2vh;}
+  .page-head h1{font-size:1.6rem;font-weight:800;margin:0 0 0.6rem;}
+  .page-head p{color:var(--fg-muted);font-size:0.9rem;margin:0;}
+
+  .char-block{max-width:760px;margin:0 auto;padding:3vh 6vw;border-top:3px dashed var(--line-strong);}
+  .char-block:first-of-type{border-top:none;}
+  .char-index{font-size:0.8rem;color:var(--fg-muted);font-weight:700;margin-bottom:1rem;}
+
+  .result-grid{display:flex;gap:1.6rem;align-items:center;}
+  .portrait{width:100px;height:100px;flex:none;border-radius:26px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, var(--accent-soft), #fff);box-shadow:var(--shadow);overflow:hidden;}
+  .portrait img{width:100%;height:100%;object-fit:cover;}
+  .result-character{font-size:clamp(1.6rem, 4.5vw, 2rem);font-weight:800;line-height:1.2;color:var(--fg);}
+  .result-typename{font-size:1rem;font-weight:700;color:var(--accent-strong);margin-top:0.4rem;}
+  .result-sub{color:var(--fg-muted);font-size:0.78rem;margin-top:0.25rem;font-weight:700;}
+  .result-catch{color:var(--fg-muted);margin-top:1.4rem;font-size:0.96rem;}
+
+  .personality-text{color:var(--fg);line-height:1.9;font-size:0.94rem;margin:1.2rem 0 1rem;}
+  .trait-tags{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem;}
+  .trait-tags span{background:var(--accent-soft);color:var(--accent-strong);font-size:0.82rem;font-weight:700;padding:0.4rem 0.85rem;border-radius:999px;}
+
+  .result-section{margin-top:1.2rem;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:1.5rem 1.5rem;box-shadow:var(--shadow);}
+  .result-section h3{font-size:0.92rem;font-weight:800;color:var(--fg);margin-bottom:0.9rem;display:flex;align-items:center;gap:0.5rem;}
+  .result-section ul{margin:0;padding:0;list-style:none;}
+  .result-section li{padding:0.5rem 0.2rem;font-size:0.9rem;color:var(--fg);display:flex;gap:0.55rem;}
+  .result-section li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none;margin-top:0.55rem;}
+
+  .point-box{margin-top:1.2rem;background:linear-gradient(135deg, var(--accent-soft), #fff);border:2px solid var(--accent);border-radius:18px;padding:1.5rem;}
+  .point-badge{display:inline-block;background:var(--accent);color:#fff;font-size:0.74rem;font-weight:800;padding:0.35rem 0.85rem;border-radius:999px;margin-bottom:0.9rem;}
+  .point-lead{font-size:0.82rem;font-weight:700;color:var(--accent-strong);margin-bottom:0.5rem;}
+  .risk-list li::before{content:'';border-radius:0;background:none;border-left:6px solid var(--accent-strong);border-top:4px solid transparent;border-bottom:4px solid transparent;width:0;height:0;margin-top:0.4rem;}
+  .point-conclusion{font-size:0.92rem;color:var(--fg);font-weight:700;line-height:1.8;margin:1.3rem 0 1.4rem;padding-top:1.2rem;border-top:1px dashed var(--line-strong);}
+  .point-box h4{font-size:0.9rem;font-weight:800;color:var(--fg);margin-bottom:0.8rem;display:flex;align-items:center;gap:0.5rem;}
+  .point-box ul{margin:0;padding:0;list-style:none;}
+  .point-box li{padding:0.5rem 0.2rem;font-size:0.9rem;color:var(--fg);display:flex;gap:0.55rem;}
+  .point-box li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent-strong);flex:none;margin-top:0.55rem;}
+
+  @media (max-width:520px){ .result-grid{flex-direction:column;align-items:flex-start;gap:1rem;} }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>全キャラクター一覧（内容確認用ページ）</h1>
+  <p>継続タイプ図鑑の4タイプ全ての診断内容を、比較しやすいよう1ページにまとめたものです。実際の診断サイト（index.html）とは別の、社内確認用ページです。</p>
+</div>
+
+<div id="all-types"></div>
+
+<script>
+const types = {
+  IC:{ name:'静かな自信屋', character:'つき', img:'tsuki.png', sub:'Intrinsic / Continuous',
+    catch:'誰に見せるためでもなく、自分のペースで続けられる人。だからこそ、変化のサインは自分では気づきにくい。',
+    traits:['自分軸','コツコツ型','照れ屋さん'],
+    personalityText:'人からどう見られるかより、自分が納得できるかどうかを大事にするタイプ。人前で目立つことよりも、静かに自分のペースを守ることに安心感を覚えます。褒められるとちょっと照れくさいけれど、実はしっかり嬉しい——そんな一面もあるのでは？',
+    habit:['休憩はそこそこで切り上げて、黙々と淡々とこなす派','同じメニューを何ヶ月続けても、正直あまり苦じゃない','隣の人が何キロ上げてても、あんまり気にならない','頑張ってる姿をSNSにあげる発想が、そもそもあまりない'],
+    train:['重量や回数を毎回記録し、月1回は数字で振り返る時間をつくる','「一人でもう十分」と思った時こそ、あえてフォームや記録を見直してみる','自分の感覚と、実際の記録にズレがないか定期的に確認する'],
+    risk:['同じフォームの崩れに気づかないまま、半年経ってもほとんど変化を感じられない','停滞のサインを見逃したまま、静かにモチベーションだけが尽きていく','一人で抱え込んだ末に、気づけばジムから足が遠のいている'],
+    ask:['月1回、フォームだけ客観的にチェックしてもらう','自分の記録と実際の変化にズレがないか、一緒に確認してもらう'] },
+  IB:{ name:'短期集中屋', character:'ほむら', img:'homura.png', sub:'Intrinsic / Burst',
+    catch:'自分の中の火で一気に燃え上がれる人。ただしその火は、目標を達成した瞬間に消えやすい。',
+    traits:['のめり込み型','飽きっぽい','マイペース'],
+    personalityText:'興味を持ったことには一気にのめり込み、まわりが驚くほどのスピードで結果を出すタイプ。ただしその分、熱が冷めるのも早め。「やる」と決めた瞬間の集中力はピカイチですが、人に急かされるとかえってやる気を失ってしまうことも。',
+    habit:['ノッてる時は休憩を惜しむのに、一段落すると急に長休憩','同じメニューが続くと、正直すぐ飽きてくる','人と比べるより、前回の自分に勝てるかが気になる','でっかい目標を達成した時だけ、つい投稿したくなる'],
+    train:['達成のたびに、次の小さな目標を自分で再設定する仕組みを持っておく','燃料切れのサインが出たら、無理に続けず短期集中に区切り直す','常時ではなく、節目ごとに強度を上げる緩急をつける'],
+    risk:['次の目標を見失ったまま、燃え尽きた状態が何ヶ月も続いてしまう','「またそのうち」を繰り返すうちに、積み上げた成果がゼロに戻る','再開のきっかけがないまま、トレーニングの習慣自体がなくなってしまう'],
+    ask:['目標を達成するたびに、次の目標設定を一緒に考えてもらう','燃え尽きそうなタイミングで、短期集中メニューを組んでもらう'] },
+  EC:{ name:'見守られ屋', character:'めぶき', img:'mebuki.png', sub:'Extrinsic / Continuous',
+    catch:'誰かに見てもらえているからこそ、コツコツ続けられる人。気づかれていない感覚が積もると、静かに離れてしまう。',
+    traits:['褒められ伸び型','仲間思い','寂しがり屋'],
+    personalityText:'誰かに見てもらえている、気にかけてもらえていると感じると、自然と頑張れるタイプ。一人でコツコツというより、仲間や周りの反応があってこそ力を発揮します。褒められた時の伸びしろは、誰よりも大きいかもしれません。',
+    habit:['休憩中、つい周りの様子が気になってしまう','同じメニューでも、誰かと一緒なら意外と続けられる','隣の人がどれくらいやってるか、ついチェックしてしまう','ちょっとした変化でも、SNSにあげて気づいてほしくなる'],
+    train:['小さな変化でも、自分の言葉で記録して残しておく','頑張りに気づいてもらえる場（人・コミュニティ）を意識して持っておく','記録に出にくい努力も、見えるかたちに変換しておく'],
+    risk:['気づかれていない感覚が積み重なり、ある日突然通わなくなる','モヤモヤを誰にも言えないまま、静かに離れてしまう','変化を感じられないまま、「意味あるのかな」と自問し続ける'],
+    ask:['毎回のセッションで、変化や頑張りを言葉にして伝えてもらう','記録に出にくい努力にも、気づいて拾ってもらう'] },
+  EB:{ name:'一発逆転屋', character:'ひらめき', img:'hirameki.png', sub:'Extrinsic / Burst',
+    catch:'気分が上がった瞬間の勢いはすごい人。ただしその勢いが冷めると、次の一歩が急に重くなる。',
+    traits:['ノリ重視','即行動派','ムードメーカー'],
+    personalityText:'テンションが上がった瞬間の行動力は誰にも負けないタイプ。「今でしょ」と思ったら、すぐ動き出せる瞬発力の持ち主です。周りが盛り上がっていると、つい一緒に乗っかりたくなるムードメーカーな一面も。',
+    habit:['テンションが高い日は、休憩もそこそこに一気に追い込む','同じことの繰り返しより、新しいメニューにすぐ飛びつきたくなる','周りと比べて、自分がどれだけやれてるか気になっちゃう','気合が入った日は、すぐSNSにあげたくなる'],
+    train:['定期的に小さな刺激（新メニュー・記録更新のチャンスなど）を自分で仕込んでおく','テンションが落ちた時に戻ってこられる、低いハードルの入り口を用意しておく','一回休んでも「そこからでいい」と割り切れる基準を決めておく'],
+    risk:['最初の勢いを取り戻せないまま、再開のきっかけを失ってしまう','「また今度」が積み重なって、気づけば半年以上のブランクになる','刺激がないまま、同じところでずっと足踏みしてしまう'],
+    ask:['刺激が切れそうな頃合いで、声をかけてもらう','お休みしても責めずに、そこからの再開をサポートしてもらう'] },
+};
+
+function li(items){ return items.map(i=>'<li>'+i+'</li>').join(''); }
+function tag(items){ return items.map(i=>'<span>#'+i+'</span>').join(''); }
+
+const root = document.getElementById('all-types');
+Object.keys(types).forEach((code, idx)=>{
+  const t = types[code];
+  const block = document.createElement('div');
+  block.className = 'char-block';
+  block.innerHTML = `
+    <p class="char-index">タイプ ${idx+1} / 4　（コード: ${code}）</p>
+    <div class="result-grid">
+      <div class="portrait"><img src="${t.img}" alt="${t.character}"></div>
+      <div>
+        <h2 class="result-character">${t.character}</h2>
+        <p class="result-typename">${t.name}</p>
+        <p class="result-sub">${t.sub}</p>
+      </div>
+    </div>
+    <p class="result-catch">${t.catch}</p>
+
+    <div class="result-section">
+      <h3>🏋️ トレーニング中の特徴</h3>
+      <ul>${li(t.habit)}</ul>
+    </div>
+
+    <div class="result-section">
+      <h3>✨ これから意識したいポイント</h3>
+      <ul>${li(t.train)}</ul>
+    </div>
+
+    <div class="point-box">
+      <span class="point-badge">💡 ここがポイント</span>
+      <p class="point-lead">このまま一人で続けると…</p>
+      <ul class="risk-list">${li(t.risk)}</ul>
+      <p class="point-conclusion">だからこそ、一人で抱え込まずにトレーナーに頼った方が、遠回りせずに済みます。</p>
+      <h4>🤝 トレーナーに頼るなら、こんなことを</h4>
+      <ul>${li(t.ask)}</ul>
+    </div>
+
+    <div class="result-section">
+      <h3>🧩 こんな性格、当てはまりませんか？</h3>
+      <p class="personality-text">${t.personalityText}</p>
+      <div class="trait-tags">${tag(t.traits)}</div>
+    </div>
+  `;
+  root.appendChild(block);
+});
+</script>
+</body>
+</html>
