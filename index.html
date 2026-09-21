@@ -114,8 +114,10 @@
 
   .result-section{margin-top:1.4rem;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1.8rem 1.7rem;box-shadow:var(--shadow);}
   .result-section h3{font-size:1.05rem;font-weight:700;font-family:'Kaisei Decol', serif;color:var(--fg);letter-spacing:0.01em;margin-bottom:1.1rem;display:flex;align-items:center;gap:0.5rem;}
+  .result-section h3 span,.point-box h4 span{min-width:0;overflow-wrap:break-word;}
   .result-section ul{margin:0;padding:0;list-style:none;}
   .result-section li{padding:0.7rem 0.2rem;font-size:0.96rem;color:var(--fg);display:flex;gap:0.6rem;}
+  .result-section li span,.point-box li span{min-width:0;flex:1;overflow-wrap:break-word;}
   .result-section li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none;margin-top:0.6rem;}
 
   .score-help{font-size:0.78rem;color:var(--fg-muted);margin-bottom:1.3rem;}
@@ -216,7 +218,7 @@
     <p class="method-note" id="tie-note" style="display:none;margin-top:1.2rem;"></p>
 
     <div class="result-section">
-      <h3>📊 傾向スコア</h3>
+      <h3>📊 <span>傾向スコア</span></h3>
       <p class="score-help">数字が大きいほど、その傾向が強いタイプです。</p>
       <div class="score-row">
         <div class="score-labels"><span class="pole-a" id="score-m-a-label"></span><span class="pole-b" id="score-m-b-label"></span></div>
@@ -229,12 +231,12 @@
     </div>
 
     <div class="result-section">
-      <h3>🏋️ トレーニング中の特徴</h3>
+      <h3>🏋️ <span>トレーニング中の特徴</span></h3>
       <ul id="result-habit"></ul>
     </div>
 
     <div class="result-section">
-      <h3>✨ これから意識したいポイント</h3>
+      <h3>✨ <span>これから意識したいポイント</span></h3>
       <ul id="result-train"></ul>
     </div>
 
@@ -243,12 +245,12 @@
       <p class="point-lead">このまま一人で続けると…</p>
       <ul class="risk-list" id="result-risk"></ul>
       <p class="point-conclusion">だからこそ、一人で抱え込まずにトレーナーに頼った方が、遠回りせずに済みます。</p>
-      <h4>🤝 トレーナーに頼るなら、こんなことを</h4>
+      <h4>🤝 <span>トレーナーに頼るなら、こんなことを</span></h4>
       <ul id="result-ask"></ul>
     </div>
 
     <div class="result-section">
-      <h3>🧩 こんな性格、当てはまりませんか？</h3>
+      <h3>🧩 <span>こんな性格、当てはまりませんか？</span></h3>
       <p class="personality-text" id="result-personality"></p>
       <div class="trait-tags" id="result-traits"></div>
     </div>
@@ -497,7 +499,9 @@ function fillList(id, items){
   ul.innerHTML = '';
   items.forEach(i=>{
     const li = document.createElement('li');
-    li.textContent = i;
+    const span = document.createElement('span');
+    span.textContent = i;
+    li.appendChild(span);
     ul.appendChild(li);
   });
 }
