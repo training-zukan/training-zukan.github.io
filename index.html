@@ -25,6 +25,7 @@
     --gym-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='120' viewBox='0 0 140 120'%3E%3Cg fill='none' stroke='%23382c20' stroke-width='2.2' stroke-linecap='round' opacity='0.045'%3E%3Crect x='4' y='38' width='10' height='16' rx='2.5'/%3E%3Crect x='62' y='38' width='10' height='16' rx='2.5'/%3E%3Cline x1='14' y1='46' x2='62' y2='46'/%3E%3Crect x='22' y='33' width='5' height='26' rx='1.5'/%3E%3Crect x='49' y='33' width='5' height='26' rx='1.5'/%3E%3Ccircle cx='108' cy='88' r='13'/%3E%3Cline x1='108' y1='75' x2='108' y2='67'/%3E%3C/g%3E%3C/svg%3E");
   }
   *{box-sizing:border-box;}
+  html,body{overflow-x:hidden;max-width:100vw;}
   html{scroll-behavior:smooth;}
   body{margin:0;background-color:var(--bg);background-image:var(--paper-spot), var(--gym-pattern);background-size:14px 14px, 280px 240px;background-position:0 0, 0 0;color:var(--fg);font-family:'M PLUS Rounded 1c', sans-serif;line-height:1.75;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word;}
   h1,h2,h3{font-family:'Kaisei Decol', serif;font-weight:700;letter-spacing:0.02em;margin:0;}
@@ -45,7 +46,7 @@
   #hero{position:relative;overflow:hidden;}
   #hero .wrap{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;}
   .hero-kicker{color:var(--accent-strong);font-size:0.9rem;font-weight:700;margin-bottom:1.4rem;font-family:'M PLUS Rounded 1c', sans-serif;}
-  .hero-title{font-size:clamp(1.7rem, 7.2vw, 3rem);line-height:1.3;font-weight:700;white-space:nowrap;}
+  .hero-title{font-size:clamp(1.6rem, 8.2vw, 3rem);line-height:1.35;font-weight:700;text-wrap:balance;max-width:100%;}
   .hero-watermark{position:absolute;z-index:0;opacity:0.1;mix-blend-mode:multiply;filter:grayscale(1) contrast(1.05);pointer-events:none;}
   .hero-watermark img{display:block;width:100%;height:100%;object-fit:contain;}
   .hero-watermark.wm-1{width:220px;height:220px;top:-6vh;right:-4vw;transform:rotate(8deg);}
@@ -67,7 +68,7 @@
   .type-chip::before{content:'';position:absolute;inset:5px;border:1px solid var(--line);border-radius:3px;pointer-events:none;}
   .type-chip .specimen-no{display:block;font-size:0.68rem;color:var(--fg-muted);letter-spacing:0.06em;margin-bottom:0.6rem;}
   .type-chip .emoji{display:block;font-size:1.9rem;margin-bottom:0.6rem;}
-  .type-chip img{width:92px;height:92px;border-radius:10px;object-fit:cover;margin-bottom:0.8rem;box-shadow:var(--shadow);}
+  .type-chip img{width:clamp(56px, 22vw, 92px);height:clamp(56px, 22vw, 92px);max-width:100%;border-radius:10px;object-fit:cover;margin-bottom:0.8rem;box-shadow:var(--shadow);}
   .type-chip b{display:block;font-size:1.2rem;color:var(--fg);font-weight:700;font-family:'Kaisei Decol', serif;}
   .type-chip .chip-type{display:block;font-size:0.8rem;color:var(--accent-strong);font-weight:700;margin:0.3rem 0 0.9rem;font-family:'M PLUS Rounded 1c', sans-serif;}
   .type-chip .chip-traits{display:flex;flex-wrap:wrap;gap:0.4rem;}
@@ -98,7 +99,7 @@
   #result .wrap{max-width:640px;}
   .result-eyebrow{font-size:0.82rem;color:var(--fg-muted);font-weight:700;margin-bottom:1rem;font-family:'M PLUS Rounded 1c', sans-serif;}
   .result-grid{display:flex;flex-direction:column;align-items:flex-start;gap:1.4rem;}
-  .portrait{width:220px;height:220px;flex:none;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, var(--accent-soft), #fff);box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--line-strong);position:relative;}
+  .portrait{width:min(220px, 52vw);height:min(220px, 52vw);flex:none;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, var(--accent-soft), #fff);box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--line-strong);position:relative;}
   .portrait::after{content:'';position:absolute;inset:6px;border:1px solid var(--line);pointer-events:none;}
   .portrait span{font-family:'M PLUS Rounded 1c', sans-serif;font-weight:800;font-size:2rem;}
   .portrait img{width:100%;height:100%;object-fit:cover;}
@@ -143,7 +144,6 @@
   .disclaimer{margin-top:2.6rem;font-size:0.74rem;color:var(--fg-muted);border-top:1px solid var(--line);padding-top:1.4rem;}
 
   @media (max-width:640px){ .screen{padding:8vh 6vw 8vh;} }
-  @media (max-width:480px){ .portrait{width:180px;height:180px;} }
 </style>
 </head>
 <body>
